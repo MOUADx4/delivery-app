@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery App - Frontend</title>
+
+    <!-- Fichier CSS (optionnel mais conseillé) -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Script JS -->
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+
+    <h1>Delivery App — Frontend</h1>
+
+    <!-- ------------------------------ -->
+    <!-- 1) Formulaire : Créer une commande -->
+    <!-- ------------------------------ -->
+    <section>
+        <h2>Créer une commande</h2>
+
+        <form id="createOrderForm">
+            <label>User ID :</label>
+            <input type="text" id="userId" required>
+
+            <label>Adresse de livraison :</label>
+            <input type="text" id="deliveryAddress" required>
+
+            <label>Restaurant ID :</label>
+            <input type="text" id="restaurantId" required>
+
+            <label>Items (format simple : name,qty,price par ligne) :</label>
+            <textarea id="itemsInput" rows="4" placeholder="Burger,1,10&#10;Coca,1,2"></textarea>
+
+            <button type="submit">Créer la commande</button>
+        </form>
+
+        <div id="createResult"></div>
+    </section>
+
+
+    <!-- ------------------------------ -->
+    <!-- 2) Formulaire : Voir commandes d’un user -->
+    <!-- ------------------------------ -->
+    <section>
+        <h2>Voir les commandes d’un utilisateur</h2>
+
+        <form id="getUserOrdersForm">
+            <label>User ID :</label>
+            <input type="text" id="searchUserId" required>
+
+            <button type="submit">Charger</button>
+        </form>
+
+        <div id="ordersList"></div>
+    </section>
+
+
+    <!-- ------------------------------ -->
+    <!-- 3) Formulaire : Voir une commande par ID -->
+    <!-- ------------------------------ -->
+    <section>
+        <h2>Voir une commande par ID</h2>
+
+        <form id="getOrderByIdForm">
+            <label>Order ID :</label>
+            <input type="text" id="searchOrderId" required>
+
+            <button type="submit">Rechercher</button>
+        </form>
+
+        <div id="singleOrder"></div>
+    </section>
+
+</body>
+</html>

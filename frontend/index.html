@@ -1,78 +1,85 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Delivery App - Frontend</title>
+    <meta charset="UTF-8" />
+    <title>Delivery App</title>
 
-    <!-- Fichier CSS (optionnel mais conseillé) -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Script JS -->
+    <link rel="stylesheet" href="style.css" />
     <script src="app.js" defer></script>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <h1>Delivery App — Frontend</h1>
+    <header>
+        <h1> Delivery App</h1>
+        <p>Gestion des commandes — FastAPI + DynamoDB</p>
+    </header>
 
-    <!-- ------------------------------ -->
-    <!-- 1) Formulaire : Créer une commande -->
-    <!-- ------------------------------ -->
-    <section>
-        <h2>Créer une commande</h2>
+    <main>
 
-        <form id="createOrderForm">
-            <label>User ID :</label>
-            <input type="text" id="userId" required>
+        <!-- 1) Créer une commande -->
+        <section class="card">
+            <h2> Créer une commande</h2>
 
-            <label>Adresse de livraison :</label>
-            <input type="text" id="deliveryAddress" required>
+            <form id="createOrderForm" class="form">
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="text" id="userId" placeholder="USER#101" required>
+                </div>
 
-            <label>Restaurant ID :</label>
-            <input type="text" id="restaurantId" required>
+                <div class="form-group">
+                    <label>Adresse de livraison</label>
+                    <input type="text" id="deliveryAddress" placeholder="12 rue Exemple" required>
+                </div>
 
-            <label>Items (format simple : name,qty,price par ligne) :</label>
-            <textarea id="itemsInput" rows="4" placeholder="Burger,1,10&#10;Coca,1,2"></textarea>
+                <div class="form-group">
+                    <label>Restaurant ID</label>
+                    <input type="text" id="restaurantId" placeholder="RESTO#101" required>
+                </div>
 
-            <button type="submit">Créer la commande</button>
-        </form>
+                <div class="form-group">
+                    <label>Items (name,qty,price par ligne)</label>
+                    <textarea id="itemsInput" rows="4" placeholder="Burger,1,8&#10;Coca,1,2"></textarea>
+                </div>
 
-        <div id="createResult"></div>
-    </section>
+                <button class="btn-primary" type="submit">Créer la commande</button>
+            </form>
 
+            <div id="createResult" class="result"></div>
+        </section>
 
-    <!-- ------------------------------ -->
-    <!-- 2) Formulaire : Voir commandes d’un user -->
-    <!-- ------------------------------ -->
-    <section>
-        <h2>Voir les commandes d’un utilisateur</h2>
+        <!-- 2) Voir commandes d’un user -->
+        <section class="card">
+            <h2> Commandes d’un utilisateur</h2>
 
-        <form id="getUserOrdersForm">
-            <label>User ID :</label>
-            <input type="text" id="searchUserId" required>
+            <form id="getUserOrdersForm" class="form-inline">
+                <input type="text" id="searchUserId" placeholder="USER#101" required>
+                <button class="btn-secondary" type="submit">Charger</button>
+            </form>
 
-            <button type="submit">Charger</button>
-        </form>
+            <div id="ordersList"></div>
+        </section>
 
-        <div id="ordersList"></div>
-    </section>
+        <!-- 3) Voir une commande par ID -->
+        <section class="card">
+            <h2> Rechercher une commande</h2>
 
+            <form id="getOrderByIdForm" class="form-inline">
+                <input type="text" id="searchOrderId" placeholder="ORDER#123456" required>
+                <button class="btn-secondary" type="submit">Rechercher</button>
+            </form>
 
-    <!-- ------------------------------ -->
-    <!-- 3) Formulaire : Voir une commande par ID -->
-    <!-- ------------------------------ -->
-    <section>
-        <h2>Voir une commande par ID</h2>
+            <div id="singleOrder"></div>
+        </section>
 
-        <form id="getOrderByIdForm">
-            <label>Order ID :</label>
-            <input type="text" id="searchOrderId" required>
+    </main>
 
-            <button type="submit">Rechercher</button>
-        </form>
-
-        <div id="singleOrder"></div>
-    </section>
+    <footer>
+        <p>© 2026 — Delivery App</p>
+    </footer>
 
 </body>
 </html>

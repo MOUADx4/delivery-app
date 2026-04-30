@@ -1,6 +1,6 @@
-// ------------------------------
-// 1) Formulaire : Créer une commande
-// ------------------------------
+
+//  Créer une commande
+
 
 const createOrderForm = document.getElementById("createOrderForm");
 const createResult = document.getElementById("createResult");
@@ -50,9 +50,8 @@ createOrderForm.addEventListener("submit", async (e) => {
 });
 
 
-// ------------------------------
-// 2) Formulaire : Voir les commandes d’un utilisateur
-// ------------------------------
+
+// Voir les commandes d’un utilisateur
 
 const getUserOrdersForm = document.getElementById("getUserOrdersForm");
 const ordersList = document.getElementById("ordersList");
@@ -65,7 +64,7 @@ getUserOrdersForm.addEventListener("submit", async (e) => {
 });
 
 
-// Fonction pour charger les commandes d’un user
+// Charger les commandes d’un user
 async function loadUserOrders(userId) {
     try {
         const encodedUserId = encodeURIComponent(userId);
@@ -95,7 +94,7 @@ async function loadUserOrders(userId) {
                     </button>
 
                     <button onclick="deleteOrder('${order.orderId}', '${order.userId}')"
-                            style="background:red;color:white;">
+                            class="btn-danger">
                         Supprimer
                     </button>
 
@@ -113,17 +112,23 @@ async function loadUserOrders(userId) {
 }
 
 
-// ------------------------------
-// 2.1) PUT : Marquer comme DELIVERED
-// ------------------------------
+
+// Marquer comme DELIVERED
+
 
 async function markDelivered(orderId, userId) {
     try {
         const encodedOrderId = encodeURIComponent(orderId);
 
-        await fetch(`http://localhost:8000/orders/${encodedOrderId}?new_status=DELIVERED`, {
-            method: "PUT"
-        });
+        const response = await fetch(
+            `http://localhost:8000/orders/${encodedOrderId}?new_status=DELIVERED`,
+            { method: "PUT" }
+        );
+
+        if (!response.ok) {
+            alert("Erreur lors de la mise à jour du statut.");
+            return;
+        }
 
         loadUserOrders(userId);
 
@@ -134,17 +139,22 @@ async function markDelivered(orderId, userId) {
 }
 
 
-// ------------------------------
-// 2.2) DELETE : Supprimer une commande
-// ------------------------------
+
+// Supprimer une commande
 
 async function deleteOrder(orderId, userId) {
     try {
         const encodedOrderId = encodeURIComponent(orderId);
 
-        await fetch(`http://localhost:8000/orders/${encodedOrderId}`, {
-            method: "DELETE"
-        });
+        const response = await fetch(
+            `http://localhost:8000/orders/${encodedOrderId}`,
+            { method: "DELETE" }
+        );
+
+        if (!response.ok) {
+            alert("Erreur lors de la suppression.");
+            return;
+        }
 
         loadUserOrders(userId);
 
@@ -155,9 +165,8 @@ async function deleteOrder(orderId, userId) {
 }
 
 
-// ------------------------------
-// 3) Formulaire : Voir une commande par ID
-// ------------------------------
+
+// Voir une commande par ID
 
 const getOrderByIdForm = document.getElementById("getOrderByIdForm");
 const singleOrder = document.getElementById("singleOrder");

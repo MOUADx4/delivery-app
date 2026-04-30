@@ -4,23 +4,44 @@ from datetime import datetime
 from decimal import Decimal
 from models import OrderCreate
 from dynamodb_client import orders_table
+from boto3.dynamodb.conditions import Key, Attr
+import os
 
 app = FastAPI()
 
 # -------------------------------------------------
-# CORS (obligatoire pour que le frontend fonctionne)
+# CORS
 # -------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # simple pour un projet étudiant
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Petite fonction pour convertir les floats en Decimal
-def decimalize(value):
-    return Decimal(str(value))
+# -------------------------------------------------
+# DEBUG : Vérifier région + table + credentials
+# -------------------------------------------------
+@app.get("/debug")
+def debug():
+    return {
+        "table_name": orders_table.table_name,
+        "region": os.getenv("AWS_REGION"),
+        "aws_access_key_id": os.getenv("AWS_ACCESS_KEY_ID")[:6] + "****"
+    }
+
+# -------------------------------------------------
+# Convertir Decimal → float (pour éviter les bugs frontend)
+# -------------------------------------------------
+def convert_decimal(obj):
+    if isinstance(obj, list):
+        return [convert_decimal(i) for i in obj]
+    if isinstance(obj, dict):
+        return {k: convert_decimal(v) for k, v in obj.items()}
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return obj
 
 
 # -----------------------------
@@ -37,7 +58,7 @@ def create_order(order: OrderCreate):
         items.append({
             "name": i.name,
             "qty": i.qty,
-            "price": decimalize(i.price)
+            "price": Decimal(str(i.price))
         })
 
     item = {
@@ -45,7 +66,7 @@ def create_order(order: OrderCreate):
         "orderId": order_id,
         "status": "PENDING",
         "items": items,
-        "totalAmount": decimalize(total),
+        "totalAmount": Decimal(str(total)),
         "deliveryAddress": order.deliveryAddress,
         "restaurantId": order.restaurantId,
         "createdAt": now,
@@ -54,7 +75,7 @@ def create_order(order: OrderCreate):
 
     orders_table.put_item(Item=item)
 
-    return {"message": "Order created", "orderId": order_id}
+    return convert_decimal({"message": "Order created", "orderId": order_id})
 
 
 # -----------------------------
@@ -63,27 +84,27 @@ def create_order(order: OrderCreate):
 @app.get("/orders/user/{user_id}")
 def get_orders_by_user(user_id: str):
     response = orders_table.query(
-        KeyConditionExpression="userId = :uid",
-        ExpressionAttributeValues={":uid": user_id}
+        KeyConditionExpression=Key("userId").eq(user_id)
     )
 
-    return {
+    items = convert_decimal(response.get("Items", []))
+
+    return convert_decimal({
         "userId": user_id,
-        "orders": response.get("Items", [])
-    }
+        "orders": items
+    })
 
 
 # -----------------------------
-# 3) Récupérer une commande précise via son orderId
+# 3) Récupérer une commande via son orderId
 # -----------------------------
 @app.get("/orders/{order_id}")
 def get_order_by_id(order_id: str):
     response = orders_table.scan(
-        FilterExpression="orderId = :oid",
-        ExpressionAttributeValues={":oid": order_id}
+        FilterExpression=Attr("orderId").eq(order_id)
     )
 
-    items = response.get("Items", [])
+    items = convert_decimal(response.get("Items", []))
 
     if not items:
         return {"message": "Order not found"}
@@ -102,11 +123,10 @@ def update_order_status(order_id: str, new_status: str):
         return {"message": "Invalid status", "allowed": allowed_status}
 
     response = orders_table.scan(
-        FilterExpression="orderId = :oid",
-        ExpressionAttributeValues={":oid": order_id}
+        FilterExpression=Attr("orderId").eq(order_id)
     )
 
-    items = response.get("Items", [])
+    items = convert_decimal(response.get("Items", []))
 
     if not items:
         return {"message": "Order not found"}
@@ -117,11 +137,11 @@ def update_order_status(order_id: str, new_status: str):
 
     orders_table.put_item(Item=order)
 
-    return {
+    return convert_decimal({
         "message": "Order updated",
         "orderId": order_id,
         "newStatus": new_status
-    }
+    })
 
 
 # -----------------------------
@@ -130,11 +150,10 @@ def update_order_status(order_id: str, new_status: str):
 @app.delete("/orders/{order_id}")
 def delete_order(order_id: str):
     response = orders_table.scan(
-        FilterExpression="orderId = :oid",
-        ExpressionAttributeValues={":oid": order_id}
+        FilterExpression=Attr("orderId").eq(order_id)
     )
 
-    items = response.get("Items", [])
+    items = convert_decimal(response.get("Items", []))
 
     if not items:
         return {"message": "Order not found"}
@@ -148,7 +167,7 @@ def delete_order(order_id: str):
         }
     )
 
-    return {
+    return convert_decimal({
         "message": "Order deleted",
         "orderId": order_id
-    }
+    })

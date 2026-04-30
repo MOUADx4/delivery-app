@@ -51,7 +51,7 @@ createOrderForm.addEventListener("submit", async (e) => {
 
 
 // ------------------------------
-// 2) Formulaire : Voir les commandes d’un utilisateur (avec actions)
+// 2) Formulaire : Voir les commandes d’un utilisateur
 // ------------------------------
 
 const getUserOrdersForm = document.getElementById("getUserOrdersForm");
@@ -68,11 +68,13 @@ getUserOrdersForm.addEventListener("submit", async (e) => {
 // Fonction pour charger les commandes d’un user
 async function loadUserOrders(userId) {
     try {
-        const response = await fetch(`http://localhost:8000/orders/user/${userId}`);
+        const encodedUserId = encodeURIComponent(userId);
+
+        const response = await fetch(`http://localhost:8000/orders/user/${encodedUserId}`);
         const data = await response.json();
         const orders = data.orders;
 
-        if (orders.length === 0) {
+        if (!orders || orders.length === 0) {
             ordersList.innerHTML = "<p>Aucune commande trouvée.</p>";
             return;
         }
@@ -117,7 +119,9 @@ async function loadUserOrders(userId) {
 
 async function markDelivered(orderId, userId) {
     try {
-        await fetch(`http://localhost:8000/orders/${orderId}?new_status=DELIVERED`, {
+        const encodedOrderId = encodeURIComponent(orderId);
+
+        await fetch(`http://localhost:8000/orders/${encodedOrderId}?new_status=DELIVERED`, {
             method: "PUT"
         });
 
@@ -136,7 +140,9 @@ async function markDelivered(orderId, userId) {
 
 async function deleteOrder(orderId, userId) {
     try {
-        await fetch(`http://localhost:8000/orders/${orderId}`, {
+        const encodedOrderId = encodeURIComponent(orderId);
+
+        await fetch(`http://localhost:8000/orders/${encodedOrderId}`, {
             method: "DELETE"
         });
 
@@ -160,9 +166,10 @@ getOrderByIdForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const orderId = document.getElementById("searchOrderId").value;
+    const encodedOrderId = encodeURIComponent(orderId);
 
     try {
-        const response = await fetch(`http://localhost:8000/orders/${orderId}`);
+        const response = await fetch(`http://localhost:8000/orders/${encodedOrderId}`);
         const order = await response.json();
 
         if (order.message === "Order not found") {

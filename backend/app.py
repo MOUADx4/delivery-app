@@ -41,9 +41,9 @@ def convert_decimal(obj):
     return obj
 
 
-# ------------------------------
+
 # CREATE ORDER
-# ------------------------------
+
 @app.post("/orders")
 def create_order(order: OrderCreate):
     total = sum(item.qty * item.price for item in order.items)
@@ -72,9 +72,9 @@ def create_order(order: OrderCreate):
     return convert_decimal({"message": "Order created", "orderId": order_id})
 
 
-# ------------------------------
+
 # GET ORDERS BY USER
-# ------------------------------
+
 @app.get("/orders/user/{user_id}")
 def get_orders_by_user(user_id: str):
     user_id = urllib.parse.unquote(user_id)
@@ -88,9 +88,9 @@ def get_orders_by_user(user_id: str):
     return {"userId": user_id, "orders": items}
 
 
-# ------------------------------
+
 # GET ORDER BY ID
-# ------------------------------
+
 @app.get("/orders/{order_id}")
 def get_order_by_id(order_id: str):
     order_id = urllib.parse.unquote(order_id)
@@ -107,9 +107,9 @@ def get_order_by_id(order_id: str):
     return items[0]
 
 
-# ------------------------------
+
 # UPDATE ORDER STATUS
-# ------------------------------
+
 @app.put("/orders/{order_id}")
 def update_order_status(order_id: str, new_status: str):
     order_id = urllib.parse.unquote(order_id)
@@ -142,9 +142,9 @@ def update_order_status(order_id: str, new_status: str):
     })
 
 
-# ------------------------------
+
 # DELETE ORDER
-# ------------------------------
+
 @app.delete("/orders/{order_id}")
 def delete_order(order_id: str):
     order_id = urllib.parse.unquote(order_id)
